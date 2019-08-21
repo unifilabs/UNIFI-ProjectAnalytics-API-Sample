@@ -1,53 +1,33 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace ProjectAnalytics.Entities
-{
-    public partial class Revision
-    {
-        [JsonProperty("revisionDate")]
-        public string RevisionDate { get; set; }
+namespace ContentManagement.Entities {
+    public partial class Revision {
+        [JsonProperty("BaseFileVersions")]
+        public BaseFileVersion[] BaseFileVersions { get; set; }
 
-        [JsonProperty("revisionNumber")]
-        public int RevisionNumber { get; set; }
+        [JsonProperty("Created")]
+        public string Created { get; set; }
 
-        [JsonProperty("issued")]
-        public bool Issued { get; set; }
+        [JsonProperty("FileRevisionId")]
+        public Guid FileRevisionId { get; set; }
 
-        [JsonProperty("issuedBy")]
-        public string IssuedBy { get; set; }
+        [JsonProperty("FillPatternType")]
+        public object FillPatternType { get; set; }
 
-        [JsonProperty("issuedTo")]
-        public string IssuedTo { get; set; }
+        [JsonProperty("MaterialClass")]
+        public object MaterialClass { get; set; }
 
-        [JsonProperty("description")]
-        public string Description { get; set; }
+        [JsonProperty("Notes")]
+        public string Notes { get; set; }
 
-        [JsonProperty("sequenceNumber")]
-        public long SequenceNumber { get; set; }
+        [JsonProperty("RevisionNumber")]
+        public long RevisionNumber { get; set; }
 
-        [JsonProperty("id")]
-        public string Id { get; set; }
+        [JsonProperty("Status")]
+        public long Status { get; set; }
 
-        [JsonProperty("elementId")]
-        public long ElementId { get; set; }
-
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
-        [JsonProperty("worksetId")]
-        public string WorksetId { get; set; }
-
-        [JsonProperty("levelId")]
-        public string LevelId { get; set; }
-
-        [JsonProperty("hasPhases")]
-        public bool HasPhases { get; set; }
-
-        [JsonProperty("createdPhaseId")]
-        public string CreatedPhaseId { get; set; }
-
-        [JsonProperty("demolishedPhaseId")]
-        public string DemolishedPhaseId { get; set; }
+        [JsonProperty("Username")]
+        public string Username { get; set; }
     }
 }

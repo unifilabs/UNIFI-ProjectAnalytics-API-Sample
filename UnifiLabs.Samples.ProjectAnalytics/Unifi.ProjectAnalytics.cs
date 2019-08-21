@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using ContentManagement;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -20,18 +19,33 @@ namespace ProjectAnalytics
         /// <returns>The UNIFI access token.</returns>
         public static string GetAccessToken(string username, string password)
         {
-            var client = new RestClient("https://api.unifilabs.com/login");
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("cache-control", "no-cache");
-            request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("undefined", JsonConvert.SerializeObject(new { username, password }), ParameterType.RequestBody);
-            var response = client.Execute(request);
+            // Check that the developer has modified the default username and password in Secrets.cs
+            if (Secrets.UnifiUsername != "USERNAME" && Secrets.UnifiPassword != "PASSWORD")
+            {
+                var client = new RestClient("https://api.unifilabs.com/login");
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("undefined", JsonConvert.SerializeObject(new { username, password }), ParameterType.RequestBody);
+                var response = client.Execute(request);
 
-            // Deserialize JSON response to a dynamic object to retrieve the access token
-            var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                // Deserialize JSON response to a dynamic object to retrieve the access token
+                var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
-            // Return the access_token value as a string
-            return obj.access_token;
+                // Return the access_token value as a string
+                return obj.access_token;
+            }
+            else
+            {
+                MessageBox.Show(
+                    "In order to use this sample application, you must add your " +
+                    "UNIFI username and password to \"Secrets.cs\" in this repository.",
+                    "Configuration Needed"
+                    );
+
+                return null;
+            }
+
         }
 
         /// <summary>

@@ -21,6 +21,6 @@ namespace ProjectAnalytics.Entities
         public bool IsAcceptableCloudSpacing { get; set; }
 
         [JsonProperty("revisions")]
-        public Revision[] Revisions { get; set; }
+        public ContentManagement.Entities.Revision[] Revisions { get; set; }
     }
 }
