@@ -24,7 +24,6 @@ namespace ProjectAnalytics
             {
                 var client = new RestClient("https://api.unifilabs.com/login");
                 var request = new RestRequest(Method.POST);
-                request.AddHeader("cache-control", "no-cache");
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("undefined", JsonConvert.SerializeObject(new { username, password }), ParameterType.RequestBody);
                 var response = client.Execute(request);
@@ -59,7 +58,6 @@ namespace ProjectAnalytics
 
             var client = new RestClient("https://api.unifilabs.com/projects");
             var request = new RestRequest(Method.GET);
-            request.AddHeader("cache-control", "no-cache");
             request.AddHeader("Authorization", "Bearer " + accessToken);
             IRestResponse response = client.Execute(request);
 
@@ -80,7 +78,6 @@ namespace ProjectAnalytics
 
             var client = new RestClient("https://api.unifilabs.com/models");
             var request = new RestRequest(Method.GET);
-            request.AddHeader("cache-control", "no-cache");
             request.AddHeader("Authorization", "Bearer " + accessToken);
             IRestResponse response = client.Execute(request);
 
@@ -102,7 +99,6 @@ namespace ProjectAnalytics
 
             var client = new RestClient("https://api.unifilabs.com/models/" + modelId.ToString());
             var request = new RestRequest(Method.GET);
-            request.AddHeader("cache-control", "no-cache");
             request.AddHeader("Authorization", "Bearer " + accessToken);
             request.AddHeader("Content-Type", "application/json");
             IRestResponse response = client.Execute(request);
@@ -125,7 +121,6 @@ namespace ProjectAnalytics
 
             var client = new RestClient("https://api.unifilabs.com/models/" + modelId.ToString() + "/commits");
             var request = new RestRequest(Method.GET);
-            request.AddHeader("cache-control", "no-cache");
             request.AddHeader("Authorization", "Bearer " + accessToken);
             IRestResponse response = client.Execute(request);
 
@@ -169,7 +164,6 @@ namespace ProjectAnalytics
 
             var client = new RestClient(eventUrl);
             var request = new RestRequest(Method.GET);
-            request.AddHeader("cache-control", "no-cache");
             IRestResponse response = client.Execute(request);
 
             // Deserialize JSON response to a Event object
@@ -237,7 +231,6 @@ namespace ProjectAnalytics
 
             var client = new RestClient("https://api.unifilabs.com/search");
             var request = new RestRequest(Method.POST);
-            request.AddHeader("cache-control", "no-cache");
             request.AddHeader("Authorization", "Bearer " + accessToken);
             request.AddHeader("Content-Type", "application/json");
             request.AddParameter("undefined", JsonConvert.SerializeObject(
@@ -284,7 +277,6 @@ namespace ProjectAnalytics
 
             var client = new RestClient("https://api.unifilabs.com/search");
             var request = new RestRequest(Method.POST);
-            request.AddHeader("cache-control", "no-cache");
             request.AddHeader("Authorization", "Bearer " + accessToken);
             request.AddHeader("Content-Type", "application/json");
             request.AddParameter("undefined", JsonConvert.SerializeObject(new { terms = name, @return = "with-parameters" }), ParameterType.RequestBody);
