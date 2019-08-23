@@ -26,12 +26,9 @@ namespace UnifiLabs.Samples.ProjectAnalytics
     {
         // Get an access token using basic authentication (username and password)
         // Optionally create a file named "Secrets.cs" and add fields called UnifiUsername and UnifiPassword and add your credentials for the below code to work.
-        // Don't forget to ensure that this file is added to your .gitignore file.
         string unifiToken = Unifi.GetAccessToken(Secrets.UnifiUsername, Secrets.UnifiPassword);
 
         // Instantiate objects for user selection
-        //public Commit commit = new Commit();
-        //public Event eventData = new Event();
         public List<Symbol> symbols = new List<Symbol>();
         public List<FamilyInstance> familyInstances = new List<FamilyInstance>();
 
