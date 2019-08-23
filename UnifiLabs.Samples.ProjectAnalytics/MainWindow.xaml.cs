@@ -73,7 +73,7 @@ namespace UnifiLabs.Samples.ProjectAnalytics
         /// <param name="isVisible">If true, the info UI elements will be displayed.</param>
         public void InfoUiVisible(bool isVisible)
         {
-            if (isVisible == true)
+            if (isVisible)
             {
                 // Show models UI
                 gridOverlay.Visibility = Visibility.Visible;
