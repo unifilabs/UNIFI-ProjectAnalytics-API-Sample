@@ -297,29 +297,8 @@ namespace UnifiLabs.Samples.ProjectAnalytics
                     {
                         MessageBox.Show("WARNING: " + numberOfSymbols + " symbols found.");
                     }
-
                 }
-
-                //// Get selected item as Symbol object
-                //var symbol = listboxSecondary.SelectedItem as Symbol;
-
-                //// Generate a list of all type parameters from selected symbol
-                //List<TypeParameter> typeParams = new List<TypeParameter>();
-
-                //foreach (var param in symbol.TypeParameters)
-                //{
-                //    typeParams.Add(param);
-                //}
-
-                //// Display parameters on datagrid
-                //dataGridFamilyData.ItemsSource = typeParams;
-
             }
-
-            //var content = Unifi.GetContentByName(unifiToken, instance.Name);
-
-            //content = Unifi.GetContentByRevisionId(unifiToken, content.CurrentRevisionId, content.Libraries[0].Id);
-
         }
     }
 }
