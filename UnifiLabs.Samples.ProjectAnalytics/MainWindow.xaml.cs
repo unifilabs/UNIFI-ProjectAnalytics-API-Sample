@@ -34,34 +34,49 @@ namespace UnifiLabs.Samples.ProjectAnalytics
 
         public MainWindow()
         {
-            InitializeComponent();
+            // Only launch application if an access token was granted
+            if (unifiToken.Length > 0)
+            {
+                InitializeComponent();
 
-            // Hide overlay UI elements
-            InfoUiVisible(false);
+                // Hide overlay UI elements
+                InfoUiVisible(false);
 
-            // Hide the info button until a project is seleceted
-            buttonProjectInfo.Visibility = Visibility.Hidden;
+                // Hide the info button until a project is seleceted
+                buttonProjectInfo.Visibility = Visibility.Hidden;
 
-            // Hide models UI until a project that contains models is selected
-            comboModels.Visibility = Visibility.Hidden;
-            labelModels.Visibility = Visibility.Hidden;
+                // Hide models UI until a project that contains models is selected
+                comboModels.Visibility = Visibility.Hidden;
+                labelModels.Visibility = Visibility.Hidden;
 
-            // Get all projects to display in combobox
-            var projects = Unifi.GetProjects(unifiToken);
+                // Get all projects to display in combobox
+                var projects = Unifi.GetProjects(unifiToken);
 
-            // Sort the projects by name
-            projects = projects.OrderBy(o => o.Name).ToList();
+                // Sort the projects by name
+                projects = projects.OrderBy(o => o.Name).ToList();
 
-            // Add each project to the combobox as items
-            foreach (var project in projects)
-                comboProjects.Items.Add(project);
+                // Add each project to the combobox as items
+                foreach (var project in projects)
+                    comboProjects.Items.Add(project);
 
-            // Get all models to display in combobox
-            var models = Unifi.GetModels(unifiToken);
+                // Get all models to display in combobox
+                var models = Unifi.GetModels(unifiToken);
 
-            // Sort the models by filename
-            models = models.OrderBy(o => o.Filename).ToList();
+                // Sort the models by filename
+                models = models.OrderBy(o => o.Filename).ToList();
+            }
+            else
+            {
+                // Show a dialog box if an access token was not granted
+                MessageBox.Show(
+                    "Could not retrieve an access token. " +
+                    "Please verify that your username and password are correct in Secrets.cs", 
+                    "Error"
+                    );
 
+                // Close the application if an access token was not granted
+                Application.Current.Shutdown();
+            }
         }
 
         /// <summary>
