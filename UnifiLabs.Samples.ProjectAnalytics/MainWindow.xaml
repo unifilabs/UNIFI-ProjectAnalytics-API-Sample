@@ -11,7 +11,13 @@
         <ComboBox x:Name="ComboModels" HorizontalAlignment="Left" Margin="264,22,0,0" VerticalAlignment="Top" Width="313" DisplayMemberPath="Filename" SelectionChanged="ComboModels_SelectionChanged" Height="22"/>
         <Button x:Name="ButtonProjectInfo" Content="i" HorizontalAlignment="Left" Margin="219,22,0,0" VerticalAlignment="Top" Width="20" Height="22" FontWeight="Bold" Click="buttonProjectInfo_Click" Background="White" BorderBrush="#FFD6D6D6"/>
         <ListBox x:Name="ListboxSecondary" HorizontalAlignment="Left" Margin="217,75,0,10" Width="232" DisplayMemberPath="Name" SelectionChanged="ListboxSecondary_SelectionChanged" />
-        <DataGrid x:Name="DataGridFamilyData" Margin="454,75,9.6,10" ItemsSource="{Binding}" AutoGenerateColumns="True"/>
+        <DataGrid x:Name="DataGridFamilyData" Margin="454,75,9.6,10" ItemsSource="{Binding}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Parameter Name" Binding="{Binding Name}" MinWidth="300"/>
+                <DataGridTextColumn Header="Parameter Value" Binding="{Binding Value}" MinWidth="300"/>
+            </DataGrid.Columns>
+
+        </DataGrid>
         <TextBlock HorizontalAlignment="Left" Margin="12,5,0,0" TextWrapping="Wrap" Text="Projects" VerticalAlignment="Top"/>
         <TextBlock x:Name="LabelModels" HorizontalAlignment="Left" Margin="264,5,0,0" TextWrapping="Wrap" Text="Models" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="12,56,0,0" TextWrapping="Wrap" Text="Model Snapshots" VerticalAlignment="Top"/>

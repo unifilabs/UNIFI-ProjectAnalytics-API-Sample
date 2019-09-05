@@ -265,8 +265,10 @@ namespace UnifiLabs.Samples.ProjectAnalytics
                             // Count one for a found symbol
                             numberOfSymbols += 1;
 
+                            // Get parameters by type ID
                             var parameters = Unifi.GetParametersByTypeId(_unifiToken, instance, Symbols, symbol.Id);
 
+                            // Display parameters and their values in the data grid
                             DataGridFamilyData.ItemsSource = parameters;
                         }
                     }
