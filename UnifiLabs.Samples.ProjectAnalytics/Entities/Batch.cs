@@ -6,13 +6,11 @@ namespace UnifiLabs.Samples.ProjectAnalytics.Entities {
         //[JsonProperty("Summary")]
         //public Summary Summary { get; set; }
 
-        [JsonProperty("Details")]
-        public object[] Details { get; set; }
+        [JsonProperty("Details")] public object[] Details { get; set; }
 
         //[JsonProperty("FileStatus")]
         //public FileStatus[] FileStatus { get; set; }
 
-        [JsonProperty("BatchId")]
-        public Guid BatchId { get; set; }
+        [JsonProperty("BatchId")] public Guid BatchId { get; set; }
     }
 }

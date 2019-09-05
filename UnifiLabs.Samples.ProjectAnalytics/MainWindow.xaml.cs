@@ -5,26 +5,22 @@ using System.Windows;
 using System.Windows.Controls;
 using UnifiLabs.Samples.ProjectAnalytics.Entities;
 
-namespace UnifiLabs.Samples.ProjectAnalytics
-{
+namespace UnifiLabs.Samples.ProjectAnalytics {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow
-    {
+    public partial class MainWindow {
         // Get an access token using basic authentication (username and password)
         // Optionally create a file named "Secrets.cs" and add fields called UnifiUsername and UnifiPassword and add your credentials for the below code to work.
-        readonly string _unifiToken = Unifi.GetAccessToken(Secrets.UnifiUsername, Secrets.UnifiPassword);
+        private readonly string _unifiToken = Unifi.GetAccessToken(Secrets.UnifiUsername, Secrets.UnifiPassword);
+        public List<FamilyInstance> FamilyInstances = new List<FamilyInstance>();
 
         // Instantiate objects for user selection
         public List<Symbol> Symbols = new List<Symbol>();
-        public List<FamilyInstance> FamilyInstances = new List<FamilyInstance>();
 
-        public MainWindow()
-        {
+        public MainWindow() {
             // Only launch application if an access token was granted
-            if (_unifiToken.Length > 0)
-            {
+            if (_unifiToken.Length > 0) {
                 InitializeComponent();
 
                 // Hide overlay UI elements
@@ -44,17 +40,15 @@ namespace UnifiLabs.Samples.ProjectAnalytics
                 projects = projects.OrderBy(o => o.Name).ToList();
 
                 // Add each project to the combobox as items
-                foreach (var project in projects)
-                    ComboProjects.Items.Add(project);
+                foreach (var project in projects) { ComboProjects.Items.Add(project); }
             }
-            else
-            {
+            else {
                 // Show a dialog box if an access token was not granted
                 MessageBox.Show(
                     "Could not retrieve an access token. " +
-                    "Please verify that your username and password are correct in Secrets.cs", 
+                    "Please verify that your username and password are correct in Secrets.cs",
                     "Error"
-                    );
+                );
 
                 // Close the application if an access token was not granted
                 Application.Current.Shutdown();
@@ -62,19 +56,16 @@ namespace UnifiLabs.Samples.ProjectAnalytics
         }
 
         /// <summary>
-        /// Display or hide the overlay UI elements which display the info textbox
+        ///     Display or hide the overlay UI elements which display the info textbox
         /// </summary>
         /// <param name="isVisible">If true, the info UI elements will be displayed.</param>
-        public void InfoUiVisible(bool isVisible)
-        {
-            if (isVisible)
-            {
+        public void InfoUiVisible(bool isVisible) {
+            if (isVisible) {
                 // Show models UI
                 GridOverlay.Visibility = Visibility.Visible;
                 GridInfo.Visibility = Visibility.Visible;
             }
-            else
-            {
+            else {
                 // Hide models UI
                 GridOverlay.Visibility = Visibility.Hidden;
                 GridInfo.Visibility = Visibility.Hidden;
@@ -82,10 +73,9 @@ namespace UnifiLabs.Samples.ProjectAnalytics
         }
 
         /// <summary>
-        /// Clear the secondary data. Typically used when selections change.
+        ///     Clear the secondary data. Typically used when selections change.
         /// </summary>
-        public void ClearSecondaryData()
-        {
+        public void ClearSecondaryData() {
             // Clear parameter datagrid
             DataGridFamilyData.ItemsSource = null;
 
@@ -97,22 +87,18 @@ namespace UnifiLabs.Samples.ProjectAnalytics
         }
 
         /// <summary>
-        /// Clear the primary data. Typically used when selections change.
+        ///     Clear the primary data. Typically used when selections change.
         /// </summary>
-        public void ClearPrimaryData()
-        {
+        public void ClearPrimaryData() {
             // Clear commits
             ListboxCommits.Items.Clear();
 
             // Clear models
             ComboModels.Items.Clear();
-
         }
 
-        private void ComboProjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ComboProjects.SelectedItem != null)
-            {
+        private void ComboProjects_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (ComboProjects.SelectedItem != null) {
                 // Show the info button
                 ButtonProjectInfo.Visibility = Visibility.Visible;
 
@@ -130,7 +116,6 @@ namespace UnifiLabs.Samples.ProjectAnalytics
                 // Hide models UI when selection changes
                 ComboModels.Visibility = Visibility.Hidden;
                 LabelModels.Visibility = Visibility.Hidden;
-
 
                 // Construct a string from Project data
                 TextBoxInfo.Text = string.Empty;
@@ -164,10 +149,8 @@ namespace UnifiLabs.Samples.ProjectAnalytics
             }
         }
 
-        private void ComboModels_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ComboModels.SelectedItem != null)
-            {
+        private void ComboModels_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (ComboModels.SelectedItem != null) {
                 // Store all commits in a list
                 var commits = new List<Commit>();
 
@@ -179,42 +162,24 @@ namespace UnifiLabs.Samples.ProjectAnalytics
                 var model = ComboModels.SelectedItem as Model;
 
                 // Retrieve all commits of the selected model
-                try
-                {
+                try {
                     if (model != null) { commits = Unifi.GetCommitsByModelId(_unifiToken, model.ModelId); }
 
                     // Sort the commits by date (newest first)
-                    if (commits.Any())
-                    {
-                        commits = commits.OrderByDescending(o => o.Timestamp).ToList();
-                    }
+                    if (commits.Any()) { commits = commits.OrderByDescending(o => o.Timestamp).ToList(); }
 
                     // Add each commit to the listbox
-                    foreach (var commit in commits)
-                    {
-                        ListboxCommits.Items.Add(commit);
-                    }
-
+                    foreach (var commit in commits) { ListboxCommits.Items.Add(commit); }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
+                catch (Exception ex) { MessageBox.Show(ex.ToString()); }
             }
         }
 
-        private void buttonProjectInfo_Click(object sender, RoutedEventArgs e)
-        {
-            InfoUiVisible(true);
-        }
+        private void buttonProjectInfo_Click(object sender, RoutedEventArgs e) { InfoUiVisible(true); }
 
-        private void buttonCloseOverlay_Click(object sender, RoutedEventArgs e)
-        {
-            InfoUiVisible(false);
-        }
+        private void buttonCloseOverlay_Click(object sender, RoutedEventArgs e) { InfoUiVisible(false); }
 
-        private void ListboxCommits_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void ListboxCommits_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             // Clear data when selection changes
             ClearSecondaryData();
 
@@ -222,46 +187,34 @@ namespace UnifiLabs.Samples.ProjectAnalytics
             var model = ComboModels.SelectedItem as Model;
 
             // Get secureUrl from event as object
-            if (ListboxCommits.SelectedItem is Commit commit)
-            {
+            if (ListboxCommits.SelectedItem is Commit commit) {
                 var eventUrl = new Uri(Unifi.GetSecureUrl(_unifiToken, model, commit.EventId).ToString());
 
                 // Set event data from event URL
                 var eventData = Unifi.GetEventData(eventUrl);
 
                 // Set all commit symbols
-                foreach (var symbol in eventData.Data.ProjectFamilies.FamilySymbols)
-                {
-                    Symbols.Add(symbol);
-                }
+                foreach (var symbol in eventData.Data.ProjectFamilies.FamilySymbols) { Symbols.Add(symbol); }
 
                 // Add family instances as items on listbox
-                foreach (var instance in eventData.Data.ProjectFamilies.FamilyInstances)
-                {
-                    FamilyInstances.Add(instance);
-                }
+                foreach (var instance in eventData.Data.ProjectFamilies.FamilyInstances) { FamilyInstances.Add(instance); }
 
                 ListboxSecondary.ItemsSource = FamilyInstances;
             }
         }
 
-        private void ListboxSecondary_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void ListboxSecondary_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             // Clear data in datagrid
             DataGridFamilyData.ItemsSource = null;
 
-            if (ListboxCommits.SelectedItems.Count > 0)
-            {
-                if (ListboxSecondary.SelectedItem is FamilyInstance instance)
-                {
+            if (ListboxCommits.SelectedItems.Count > 0) {
+                if (ListboxSecondary.SelectedItem is FamilyInstance instance) {
                     // Only one symbol should be found with the unie ID, so we store the number of symbols that match for debugging and data validation
-                    int numberOfSymbols = 0;
+                    var numberOfSymbols = 0;
 
                     // Find the family type (symbol) from the familyInstance's typeId property
-                    foreach (var symbol in Symbols)
-                    {
-                        if (instance.FamilySymbolId == symbol.Id)
-                        {
+                    foreach (var symbol in Symbols) {
+                        if (instance.FamilySymbolId == symbol.Id) {
                             // Count one for a found symbol
                             numberOfSymbols += 1;
 
@@ -274,10 +227,7 @@ namespace UnifiLabs.Samples.ProjectAnalytics
                     }
 
                     // If more than one symbol with the same ID are found or if no symbols are found, display a warning
-                    if (numberOfSymbols > 1 || numberOfSymbols == 0)
-                    {
-                        MessageBox.Show("WARNING: " + numberOfSymbols + " symbols found.");
-                    }
+                    if (numberOfSymbols > 1 || numberOfSymbols == 0) { MessageBox.Show("WARNING: " + numberOfSymbols + " symbols found."); }
                 }
             }
         }
