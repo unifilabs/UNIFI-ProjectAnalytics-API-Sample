@@ -1,9 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace ProjectAnalytics.Entities
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities
 {
-    public partial class Images
+    public class Images
     {
         [JsonProperty("imageTypes")]
         public object[] ImageTypes { get; set; }

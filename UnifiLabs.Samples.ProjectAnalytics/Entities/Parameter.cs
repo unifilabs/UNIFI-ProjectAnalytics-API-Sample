@@ -1,25 +1,12 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace ProjectAnalytics.Entities
-{
-    public partial class Parameter
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities {
+    public class Parameter
     {
         [JsonProperty("id")]
         public long Id { get; set; }
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
-        [JsonProperty("value")]
-        public string Value { get; set; }
-    }
-}
-
-namespace ContentManagement.Entities
-{
-    public partial class Parameter
-    {
         [JsonProperty("TypeName")]
         public string TypeName { get; set; }
 

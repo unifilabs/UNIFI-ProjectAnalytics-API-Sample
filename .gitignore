@@ -330,3 +330,4 @@ ASALocalRun/
 .mfractor/
 .DS_Store
 .vs
+UnifiLabs.Samples.ProjectAnalytics/Secrets.cs

@@ -1,9 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace ProjectAnalytics.Entities
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities
 {
-    public partial class AlphaNumericRevisionInfo
+    public class AlphaNumericRevisionInfo
     {
         [JsonProperty("prefix")]
         public string Prefix { get; set; }

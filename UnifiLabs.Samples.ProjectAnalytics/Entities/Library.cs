@@ -1,8 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace ContentManagement.Entities {
-    public partial class Library {
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities {
+    public class Library {
         [JsonProperty("AccessibleUserGroups")]
         public object[] AccessibleUserGroups { get; set; }
 
@@ -32,7 +32,7 @@ namespace ContentManagement.Entities {
 
         [JsonProperty("LibraryId")]
         private Guid LibraryId {
-            set { Id = value; }
+            set => Id = value;
         }
 
         [JsonProperty("LibraryType")]
@@ -43,7 +43,7 @@ namespace ContentManagement.Entities {
 
         [JsonProperty("Name")]
         private string Name2 {
-            set { Name = value; }
+            set => Name = value;
         }
 
         [JsonProperty("RepositoryId")]

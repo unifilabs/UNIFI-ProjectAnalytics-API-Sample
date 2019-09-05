@@ -1,9 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace ProjectAnalytics.Entities
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities
 {
-    public partial class Links
+    public class Links
     {
         [JsonProperty("cadLinkTypes")]
         public object[] CadLinkTypes { get; set; }

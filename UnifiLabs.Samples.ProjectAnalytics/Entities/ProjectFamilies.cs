@@ -1,9 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace ProjectAnalytics.Entities
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities
 {
-    public partial class ProjectFamilies
+    public class ProjectFamilies
     {
         [JsonProperty("families")]
         public Family[] Families { get; set; }

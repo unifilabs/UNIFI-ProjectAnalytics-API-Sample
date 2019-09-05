@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace ProjectAnalytics.Entities
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities
 {
-    public partial class Project
+    public class Project
     {
         [JsonProperty("projectId")]
         public Guid ProjectId { get; set; }
@@ -30,7 +30,7 @@ namespace ProjectAnalytics.Entities
         public Guid[] ModelIds { get; set; }
     }
 
-    public partial class Pins
+    public class Pins
     {
         [JsonProperty("href")]
         public string Href { get; set; }

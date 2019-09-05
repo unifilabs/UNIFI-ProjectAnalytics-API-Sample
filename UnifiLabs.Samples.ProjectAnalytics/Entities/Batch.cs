@@ -1,8 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace ContentManagement.Entities {
-    public partial class Batch {
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities {
+    public class Batch {
         //[JsonProperty("Summary")]
         //public Summary Summary { get; set; }
 

@@ -1,9 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace ProjectAnalytics.Entities
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities
 {
-    public partial class RevisionInfo
+    public class RevisionInfo
     {
         [JsonProperty("alphaNumericRevisionInfo")]
         public AlphaNumericRevisionInfo AlphaNumericRevisionInfo { get; set; }
@@ -21,6 +20,6 @@ namespace ProjectAnalytics.Entities
         public bool IsAcceptableCloudSpacing { get; set; }
 
         [JsonProperty("revisions")]
-        public ContentManagement.Entities.Revision[] Revisions { get; set; }
+        public Revision[] Revisions { get; set; }
     }
 }

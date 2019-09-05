@@ -1,8 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace ContentManagement.Entities {
-    public partial class Revision {
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities {
+    public class Revision {
         [JsonProperty("BaseFileVersions")]
         public BaseFileVersion[] BaseFileVersions { get; set; }
 

@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Globalization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
-namespace ProjectAnalytics.Entities
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities
 {
-    public partial class Event
+    public class Event
     {
         [JsonProperty("signedUrl")]
         public Uri Url { get; set; }

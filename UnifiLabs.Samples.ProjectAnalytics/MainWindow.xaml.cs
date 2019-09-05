@@ -1,41 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using ContentManagement.Entities;
-using ProjectAnalytics;
-using ProjectAnalytics.Entities;
+using UnifiLabs.Samples.ProjectAnalytics.Entities;
 
 namespace UnifiLabs.Samples.ProjectAnalytics
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         // Get an access token using basic authentication (username and password)
         // Optionally create a file named "Secrets.cs" and add fields called UnifiUsername and UnifiPassword and add your credentials for the below code to work.
-        string unifiToken = Unifi.GetAccessToken(Secrets.UnifiUsername, Secrets.UnifiPassword);
+        readonly string _unifiToken = Unifi.GetAccessToken(Secrets.UnifiUsername, Secrets.UnifiPassword);
 
         // Instantiate objects for user selection
-        public List<Symbol> symbols = new List<Symbol>();
-        public List<FamilyInstance> familyInstances = new List<FamilyInstance>();
+        public List<Symbol> Symbols = new List<Symbol>();
+        public List<FamilyInstance> FamilyInstances = new List<FamilyInstance>();
 
         public MainWindow()
         {
             // Only launch application if an access token was granted
-            if (unifiToken.Length > 0)
+            if (_unifiToken.Length > 0)
             {
                 InitializeComponent();
 
@@ -43,27 +31,21 @@ namespace UnifiLabs.Samples.ProjectAnalytics
                 InfoUiVisible(false);
 
                 // Hide the info button until a project is seleceted
-                buttonProjectInfo.Visibility = Visibility.Hidden;
+                ButtonProjectInfo.Visibility = Visibility.Hidden;
 
                 // Hide models UI until a project that contains models is selected
-                comboModels.Visibility = Visibility.Hidden;
-                labelModels.Visibility = Visibility.Hidden;
+                ComboModels.Visibility = Visibility.Hidden;
+                LabelModels.Visibility = Visibility.Hidden;
 
                 // Get all projects to display in combobox
-                var projects = Unifi.GetProjects(unifiToken);
+                var projects = Unifi.GetProjects(_unifiToken);
 
                 // Sort the projects by name
                 projects = projects.OrderBy(o => o.Name).ToList();
 
                 // Add each project to the combobox as items
                 foreach (var project in projects)
-                    comboProjects.Items.Add(project);
-
-                // Get all models to display in combobox
-                var models = Unifi.GetModels(unifiToken);
-
-                // Sort the models by filename
-                models = models.OrderBy(o => o.Filename).ToList();
+                    ComboProjects.Items.Add(project);
             }
             else
             {
@@ -88,14 +70,14 @@ namespace UnifiLabs.Samples.ProjectAnalytics
             if (isVisible)
             {
                 // Show models UI
-                gridOverlay.Visibility = Visibility.Visible;
-                gridInfo.Visibility = Visibility.Visible;
+                GridOverlay.Visibility = Visibility.Visible;
+                GridInfo.Visibility = Visibility.Visible;
             }
             else
             {
                 // Hide models UI
-                gridOverlay.Visibility = Visibility.Hidden;
-                gridInfo.Visibility = Visibility.Hidden;
+                GridOverlay.Visibility = Visibility.Hidden;
+                GridInfo.Visibility = Visibility.Hidden;
             }
         }
 
@@ -105,13 +87,13 @@ namespace UnifiLabs.Samples.ProjectAnalytics
         public void ClearSecondaryData()
         {
             // Clear parameter datagrid
-            dataGridFamilyData.ItemsSource = null;
+            DataGridFamilyData.ItemsSource = null;
 
             // Clear secondary navigation and family instances
-            familyInstances.Clear();
-            listboxSecondary.ItemsSource = null;
+            FamilyInstances.Clear();
+            ListboxSecondary.ItemsSource = null;
 
-            symbols.Clear();
+            Symbols.Clear();
         }
 
         /// <summary>
@@ -120,26 +102,25 @@ namespace UnifiLabs.Samples.ProjectAnalytics
         public void ClearPrimaryData()
         {
             // Clear commits
-            listboxCommits.Items.Clear();
+            ListboxCommits.Items.Clear();
 
             // Clear models
-            comboModels.Items.Clear();
+            ComboModels.Items.Clear();
 
         }
 
         private void ComboProjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (comboProjects.SelectedItem != null)
+            if (ComboProjects.SelectedItem != null)
             {
                 // Show the info button
-                buttonProjectInfo.Visibility = Visibility.Visible;
+                ButtonProjectInfo.Visibility = Visibility.Visible;
 
                 // Store all model objects in a list
                 var models = new List<Model>();
 
                 // Get selected item as a project object
-                var project = new Project();
-                project = comboProjects.SelectedItem as Project;
+                var project = ComboProjects.SelectedItem as Project;
 
                 // Always clear data when selection changes
                 ClearPrimaryData();
@@ -147,70 +128,63 @@ namespace UnifiLabs.Samples.ProjectAnalytics
                 ClearSecondaryData();
 
                 // Hide models UI when selection changes
-                comboModels.Visibility = Visibility.Hidden;
-                labelModels.Visibility = Visibility.Hidden;
+                ComboModels.Visibility = Visibility.Hidden;
+                LabelModels.Visibility = Visibility.Hidden;
 
 
                 // Construct a string from Project data
-                textBoxInfo.Text = string.Empty;
-                textBoxInfo.Text += "Project ID: " + project.ProjectId + "\n";
-                textBoxInfo.Text += "Analytics: " + project.Analytics + "\n";
-                textBoxInfo.Text += "Status: " + project.Phase + "\n";
-                textBoxInfo.Text += "Project Phase: " + project.DesignPhase + "\n";
-                textBoxInfo.Text += "Office Location: " + project.OfficeLocationId + "\n";
+                TextBoxInfo.Text = string.Empty;
+                if (project != null) {
+                    TextBoxInfo.Text += "Project ID: " + project.ProjectId + "\n";
+                    TextBoxInfo.Text += "Analytics: " + project.Analytics + "\n";
+                    TextBoxInfo.Text += "Status: " + project.Phase + "\n";
+                    TextBoxInfo.Text += "Project Phase: " + project.DesignPhase + "\n";
+                    TextBoxInfo.Text += "Office Location: " + project.OfficeLocationId + "\n";
 
-                // Display model IDs if the project contains models.
-                if (project.ModelIds.Count() > 0)
-                {
-                    // Enable combobox to select model
-                    labelModels.Visibility = Visibility.Visible;
-                    comboModels.Visibility = Visibility.Visible;
+                    // Display model IDs if the project contains models.
+                    if (project.ModelIds.Any()) {
+                        // Enable combobox to select model
+                        LabelModels.Visibility = Visibility.Visible;
+                        ComboModels.Visibility = Visibility.Visible;
 
-                    textBoxInfo.Text += "Model IDs: \n";
+                        TextBoxInfo.Text += "Model IDs: \n";
 
-                    foreach (var modelId in project.ModelIds)
-                    {
-                        textBoxInfo.Text += "  - " + modelId + "\n";
+                        foreach (var modelId in project.ModelIds) {
+                            TextBoxInfo.Text += "  - " + modelId + "\n";
 
-                        models.Add(Unifi.GetModelById(unifiToken, modelId));
+                            models.Add(Unifi.GetModelById(_unifiToken, modelId));
+                        }
+
+                        // Add each project to the combobox as items
+                        foreach (var model in models) { ComboModels.Items.Add(model); }
                     }
-
-                    // Add each project to the combobox as items
-                    foreach (var model in models)
-                    {
-                        comboModels.Items.Add(model);
-                    }
-                }
-                // If there are no models, display a message.
-                else
-                {
-                    textBoxInfo.Text += "This project has no models assigned.";
+                    // If there are no models, display a message.
+                    else { TextBoxInfo.Text += "This project has no models assigned."; }
                 }
             }
         }
 
         private void ComboModels_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (comboModels.SelectedItem != null)
+            if (ComboModels.SelectedItem != null)
             {
                 // Store all commits in a list
                 var commits = new List<Commit>();
 
                 // Clear data when model selection changes
-                listboxCommits.Items.Clear();
+                ListboxCommits.Items.Clear();
                 ClearSecondaryData();
 
                 // Get model object from combobox
-                var model = new Model();
-                model = comboModels.SelectedItem as Model;
+                var model = ComboModels.SelectedItem as Model;
 
                 // Retrieve all commits of the selected model
                 try
                 {
-                    commits = Unifi.GetCommitsByModelId(unifiToken, model.ModelId);
+                    if (model != null) { commits = Unifi.GetCommitsByModelId(_unifiToken, model.ModelId); }
 
                     // Sort the commits by date (newest first)
-                    if (commits.Count() > 0)
+                    if (commits.Any())
                     {
                         commits = commits.OrderByDescending(o => o.Timestamp).ToList();
                     }
@@ -218,7 +192,7 @@ namespace UnifiLabs.Samples.ProjectAnalytics
                     // Add each commit to the listbox
                     foreach (var commit in commits)
                     {
-                        listboxCommits.Items.Add(commit);
+                        ListboxCommits.Items.Add(commit);
                     }
 
                 }
@@ -245,16 +219,12 @@ namespace UnifiLabs.Samples.ProjectAnalytics
             ClearSecondaryData();
 
             // Get model from selected item
-            var model = new Model();
-            model = comboModels.SelectedItem as Model;
-
-            // Set commit object from selection
-            var commit = listboxCommits.SelectedItem as Commit;
+            var model = ComboModels.SelectedItem as Model;
 
             // Get secureUrl from event as object
-            if (commit != null)
+            if (ListboxCommits.SelectedItem is Commit commit)
             {
-                var eventUrl = new Uri(Unifi.GetSecureUrl(unifiToken, model, commit.EventId).ToString());
+                var eventUrl = new Uri(Unifi.GetSecureUrl(_unifiToken, model, commit.EventId).ToString());
 
                 // Set event data from event URL
                 var eventData = Unifi.GetEventData(eventUrl);
@@ -262,45 +232,42 @@ namespace UnifiLabs.Samples.ProjectAnalytics
                 // Set all commit symbols
                 foreach (var symbol in eventData.Data.ProjectFamilies.FamilySymbols)
                 {
-                    symbols.Add(symbol);
+                    Symbols.Add(symbol);
                 }
 
                 // Add family instances as items on listbox
                 foreach (var instance in eventData.Data.ProjectFamilies.FamilyInstances)
                 {
-                    familyInstances.Add(instance);
+                    FamilyInstances.Add(instance);
                 }
 
-                listboxSecondary.ItemsSource = familyInstances;
+                ListboxSecondary.ItemsSource = FamilyInstances;
             }
         }
 
         private void ListboxSecondary_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Clear data in datagrid
-            dataGridFamilyData.ItemsSource = null;
+            DataGridFamilyData.ItemsSource = null;
 
-            if (listboxCommits.SelectedItems.Count > 0)
+            if (ListboxCommits.SelectedItems.Count > 0)
             {
-                // Get the content object from selection
-                var instance = listboxSecondary.SelectedItem as FamilyInstance;
-
-                if (instance != null)
+                if (ListboxSecondary.SelectedItem is FamilyInstance instance)
                 {
                     // Only one symbol should be found with the unie ID, so we store the number of symbols that match for debugging and data validation
                     int numberOfSymbols = 0;
 
                     // Find the family type (symbol) from the familyInstance's typeId property
-                    foreach (var symbol in symbols)
+                    foreach (var symbol in Symbols)
                     {
                         if (instance.FamilySymbolId == symbol.Id)
                         {
                             // Count one for a found symbol
                             numberOfSymbols += 1;
 
-                            var parameters = Unifi.GetParametersByTypeId(unifiToken, instance, symbols, symbol.Id);
+                            var parameters = Unifi.GetParametersByTypeId(_unifiToken, instance, Symbols, symbol.Id);
 
-                            dataGridFamilyData.ItemsSource = parameters;
+                            DataGridFamilyData.ItemsSource = parameters;
                         }
                     }
 

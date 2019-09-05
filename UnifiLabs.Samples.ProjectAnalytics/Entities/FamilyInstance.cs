@@ -1,9 +1,8 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace ProjectAnalytics.Entities
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities
 {
-    public partial class FamilyInstance
+    public class FamilyInstance
     {
         [JsonProperty("familyId", NullValueHandling = NullValueHandling.Ignore)]
         public string FamilyId { get; set; }
@@ -13,8 +12,8 @@ namespace ProjectAnalytics.Entities
         public string TypeId { get; set; }
         public string FamilySymbolId
         {
-            get { return TypeId; }
-            set { TypeId = value; }
+            get => TypeId;
+            set => TypeId = value;
         }
 
         [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]

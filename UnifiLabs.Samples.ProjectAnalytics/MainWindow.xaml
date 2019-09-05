@@ -3,25 +3,24 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:UnifiLabs.Samples.ProjectAnalytics"
         mc:Ignorable="d"
         Title="UNIFI - Project Data Browser" Height="450" Width="1168">
     <Grid>
-        <ComboBox x:Name="comboProjects" HorizontalAlignment="Left" Margin="12,22,0,0" VerticalAlignment="Top" Width="202" DisplayMemberPath="Name" SelectionChanged="ComboProjects_SelectionChanged" Height="22"/>
-        <ListBox x:Name="listboxCommits" Margin="10,75,0,10" HorizontalAlignment="Left" Width="202" DisplayMemberPath="Timestamp" SelectionChanged="ListboxCommits_SelectionChanged" />
-        <ComboBox x:Name="comboModels" HorizontalAlignment="Left" Margin="264,22,0,0" VerticalAlignment="Top" Width="313" DisplayMemberPath="Filename" SelectionChanged="ComboModels_SelectionChanged" Height="22"/>
-        <Button x:Name="buttonProjectInfo" Content="i" HorizontalAlignment="Left" Margin="219,22,0,0" VerticalAlignment="Top" Width="20" Height="22" FontWeight="Bold" Click="buttonProjectInfo_Click" Background="White" BorderBrush="#FFD6D6D6"/>
-        <ListBox x:Name="listboxSecondary" HorizontalAlignment="Left" Margin="217,75,0,10" Width="232" DisplayMemberPath="Name" SelectionChanged="ListboxSecondary_SelectionChanged" />
-        <DataGrid x:Name="dataGridFamilyData" Margin="454,75,9.6,10" ItemsSource="{Binding}" AutoGenerateColumns="True"/>
+        <ComboBox x:Name="ComboProjects" HorizontalAlignment="Left" Margin="12,22,0,0" VerticalAlignment="Top" Width="202" DisplayMemberPath="Name" SelectionChanged="ComboProjects_SelectionChanged" Height="22"/>
+        <ListBox x:Name="ListboxCommits" Margin="10,75,0,10" HorizontalAlignment="Left" Width="202" DisplayMemberPath="Timestamp" SelectionChanged="ListboxCommits_SelectionChanged" />
+        <ComboBox x:Name="ComboModels" HorizontalAlignment="Left" Margin="264,22,0,0" VerticalAlignment="Top" Width="313" DisplayMemberPath="Filename" SelectionChanged="ComboModels_SelectionChanged" Height="22"/>
+        <Button x:Name="ButtonProjectInfo" Content="i" HorizontalAlignment="Left" Margin="219,22,0,0" VerticalAlignment="Top" Width="20" Height="22" FontWeight="Bold" Click="buttonProjectInfo_Click" Background="White" BorderBrush="#FFD6D6D6"/>
+        <ListBox x:Name="ListboxSecondary" HorizontalAlignment="Left" Margin="217,75,0,10" Width="232" DisplayMemberPath="Name" SelectionChanged="ListboxSecondary_SelectionChanged" />
+        <DataGrid x:Name="DataGridFamilyData" Margin="454,75,9.6,10" ItemsSource="{Binding}" AutoGenerateColumns="True"/>
         <TextBlock HorizontalAlignment="Left" Margin="12,5,0,0" TextWrapping="Wrap" Text="Projects" VerticalAlignment="Top"/>
-        <TextBlock x:Name="labelModels" HorizontalAlignment="Left" Margin="264,5,0,0" TextWrapping="Wrap" Text="Models" VerticalAlignment="Top"/>
+        <TextBlock x:Name="LabelModels" HorizontalAlignment="Left" Margin="264,5,0,0" TextWrapping="Wrap" Text="Models" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="12,56,0,0" TextWrapping="Wrap" Text="Model Snapshots" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="219,56,0,0" TextWrapping="Wrap" Text="Assets" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="454,56,0,0" TextWrapping="Wrap" Text="Data" VerticalAlignment="Top"/>
-        <Grid x:Name="gridOverlay" Background="#CC000000" Margin="0,0,-0.4,0" d:IsHidden="True"/>
-        <Grid x:Name="gridInfo" Margin="267,64,265.6,58" Background="White" d:IsHidden="True">
-            <Button x:Name="buttonCloseOverlay" Content="X" VerticalAlignment="Top" Click="buttonCloseOverlay_Click" BorderBrush="{x:Null}" Background="White" Margin="0,10,10,0" HorizontalAlignment="Right" Width="22"/>
-            <TextBox x:Name="textBoxInfo" Margin="10,43,10,10" TextWrapping="Wrap" BorderBrush="{x:Null}" IsReadOnly="True" Padding="20"/>
+        <Grid x:Name="GridOverlay" Background="#CC000000" Margin="0,0,-0.4,0" d:IsHidden="True"/>
+        <Grid x:Name="GridInfo" Margin="267,64,265.6,58" Background="White" d:IsHidden="True">
+            <Button x:Name="ButtonCloseOverlay" Content="X" VerticalAlignment="Top" Click="buttonCloseOverlay_Click" BorderBrush="{x:Null}" Background="White" Margin="0,10,10,0" HorizontalAlignment="Right" Width="22"/>
+            <TextBox x:Name="TextBoxInfo" Margin="10,43,10,10" TextWrapping="Wrap" BorderBrush="{x:Null}" IsReadOnly="True" Padding="20"/>
         </Grid>
     </Grid>
 </Window>

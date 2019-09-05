@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace ContentManagement.Entities {
-    public partial class Content {
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities {
+    public class Content {
         // Pass values from Manufacturer and Model parameters to object
         public string Manufacturer { get; set; }
         public string Model { get; set; }

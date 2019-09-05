@@ -1,8 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace ContentManagement.Entities {
-    public partial class Tag {
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities {
+    public class Tag {
         [JsonProperty("RepositoryNumber")]
         public long RepositoryNumber { get; set; }
 

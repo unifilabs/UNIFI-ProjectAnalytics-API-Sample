@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 
-namespace ContentManagement.Entities {
-    public partial class BatchStatus {
+namespace UnifiLabs.Samples.ProjectAnalytics.Entities {
+    public class BatchStatus {
         [JsonProperty("resultDetails")]
         public string ResultDetails { get; set; }
 
