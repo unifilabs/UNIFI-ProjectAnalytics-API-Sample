@@ -1,6 +1,7 @@
-﻿using ProjectAnalytics;
+﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +19,12 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
 
         // Instantiate objects for user selection
         public List<Symbol> Symbols = new List<Symbol>();
+
+        // Instantiate the selected commit
+        public Event SelectedEvent;
+
+        // Get the most recent commit from the selected model
+        public Commit LatestCommit;
 
         public MainWindow() {
             // Only launch application if an access token was granted
@@ -169,6 +176,9 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                     // Sort the commits by date (newest first)
                     if (commits.Any()) { commits = commits.OrderByDescending(o => o.Timestamp).ToList(); }
 
+                    // Store the latest commit in field
+                    LatestCommit = commits[0];
+
                     // Add each commit to the listbox
                     foreach (var commit in commits) { ListboxCommits.Items.Add(commit); }
                 }
@@ -192,13 +202,13 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                 var eventUrl = new Uri(Unifi.GetSecureUrl(_unifiToken, model, commit.EventId).ToString());
 
                 // Set event data from event URL
-                var eventData = Unifi.GetEventData(eventUrl);
+                SelectedEvent = Unifi.GetEventData(eventUrl);
 
                 // Set all commit symbols
-                foreach (var symbol in eventData.Data.ProjectFamilies.FamilySymbols) { Symbols.Add(symbol); }
+                foreach (var symbol in SelectedEvent.Data.ProjectFamilies.FamilySymbols) { Symbols.Add(symbol); }
 
-                // Add family instances as items on listbox
-                foreach (var instance in eventData.Data.ProjectFamilies.FamilyInstances) { FamilyInstances.Add(instance); }
+                // Add family instances as items in listbox
+                foreach (var instance in SelectedEvent.Data.ProjectFamilies.FamilyInstances) { FamilyInstances.Add(instance); }
 
                 ListboxSecondary.ItemsSource = FamilyInstances;
             }
@@ -230,6 +240,105 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                     // If more than one symbol with the same ID are found or if no symbols are found, display a warning
                     if (numberOfSymbols > 1 || numberOfSymbols == 0) { MessageBox.Show("WARNING: " + numberOfSymbols + " symbols found."); }
                 }
+            }
+        }
+
+        private void BtnCompareChanges_Click(object sender, RoutedEventArgs e) {
+            // Get model from selected item
+            var model = ComboModels.SelectedItem as Model;
+
+            // Get secureUrl from event as object
+            var latestEventUrl = new Uri(Unifi.GetSecureUrl(_unifiToken, model, LatestCommit.EventId).ToString());
+
+            // Set event data from event URL
+            var latestEvent = Unifi.GetEventData(latestEventUrl);
+
+            // Get latest and selected event families as lists
+            var latestEventFamilies = latestEvent.Data.ProjectFamilies.FamilyInstances.ToList();
+            var selectedEventFamilies = SelectedEvent.Data.ProjectFamilies.FamilyInstances.ToList();
+
+            // Retrieves all of the families that have been added to the project model since the selected sync
+            var addedFamilies = Unifi.GetNewFamilies(selectedEventFamilies, latestEventFamilies);
+
+            // Retrieves all of the families that have been deleted from the project model since the selected sync
+            var deletedFamilies = Unifi.GetDeletedFamilies(selectedEventFamilies, latestEventFamilies);
+
+            // Calculate the elapsed time between syncs
+            var elapsedTime = latestEvent.CollectionTime.Subtract(SelectedEvent.CollectionTime);
+
+            // Store the results of the test in a string
+            var reportData = "# Revit Model Changelog\n";
+
+            // Add a summary of data regarding the report
+            reportData += "This report was generated using the UNIFI Project Analytics API. For access to the source code, visit " +
+                          "[https://github.com/unifilabs/UNIFI-ProjectAnalytics-API-Sample]." +
+                          "\n---\n" +
+                          "*Model:* " + (ComboModels.SelectedItem as Model).Filename + "\n" +
+                          "*Dates Compared:* " +
+                          SelectedEvent.CollectionTime.LocalDateTime + " => " + latestEvent.CollectionTime.LocalDateTime + "\n" +
+                          "*Time elapsed:* " + elapsedTime.Days + " days, " + elapsedTime.Hours + " hours, " + elapsedTime.Minutes +
+                          " minutes, " + elapsedTime.Seconds + " seconds";
+
+            reportData += "\n---\n";
+
+            // Add the added families to the report string
+            reportData += "## Families Added\n";
+
+            if (addedFamilies.Count() != 0) {
+                // Create a counter the generate an ordered list
+                var counter = 1;
+
+                reportData += String.Format("{0:n0}", addedFamilies.Count()) + " families have been added.\n\n";
+
+                // Add an ordered list item for each family in the list
+                foreach (var fam in addedFamilies) {
+                    // Write data to a line in the report
+                    reportData += counter + ". [" + fam.ElementId + "] " + fam.Name + "\n";
+
+                    // Increase the counter by one to continue the ordered list
+                    counter += 1;
+                }
+            }
+            else { reportData += "No families were added.\n"; }
+
+            reportData += "\n---\n";
+
+            // Add the deleted families to the report string
+            reportData += "## Families Deleted\n";
+
+            if (deletedFamilies.Count() != 0) {
+                // Create a counter the generate an ordered list
+                var counter = 1;
+
+                reportData += String.Format("{0:n0}", deletedFamilies.Count()) + " families have been deleted.\n\n";
+
+                // Add an ordered list item for each family in the list
+                foreach (var fam in deletedFamilies) {
+                    // Write data to a line in the report
+                    reportData += counter + ". [" + fam.ElementId + "] " + fam.Name + "\n";
+
+                    // Increase the counter by one to continue the ordered list
+                    counter += 1;
+                }
+            }
+            else { reportData += "No families were deleted.\n"; }
+
+            reportData += "\n---\n";
+
+            // Save the string as a text file
+            SaveFileDialog save = new SaveFileDialog();
+
+            save.FileName = "UNIFI Project Analytics Changelog";
+            save.Filter = "Markdown Text File | *.md";
+
+            if (save.ShowDialog() == true) {
+                StreamWriter writer = new StreamWriter(save.OpenFile());
+
+                writer.Write(reportData);
+                writer.Dispose();
+                writer.Close();
+
+                MessageBox.Show("Report saved to: " + save.FileName);
             }
         }
     }

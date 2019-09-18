@@ -266,5 +266,31 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
             MessageBox.Show("Error loading content.");
             return new Content();
         }
+
+        /// <summary>
+        ///     Retrieves the families that were added to a model by comparing family instances stored in Events.
+        /// </summary>
+        /// <param name="selectedEventFamilies">The previous event (i.e., snapshot / sync) to compare to a newer event.</param>
+        /// <param name="currentEventFamilies">The newer event (i.e., snapshot / sync) to compare to an older event.</param>
+        /// <returns></returns>
+        public static IEnumerable<FamilyInstance> GetNewFamilies(
+            List<FamilyInstance> olderEventFamilies,
+            List<FamilyInstance> currentEventFamilies) {
+            var addedFamilies = currentEventFamilies.Where(f1 => olderEventFamilies.All(f2 => f2.Id != f1.Id));
+            return addedFamilies;
+        }
+
+        /// <summary>
+        ///     Retrieves the families that were deleted from model by comparing family instances stored in Events.
+        /// </summary>
+        /// <param name="selectedEventFamilies">The previous event (i.e., snapshot / sync) to compare to a newer event.</param>
+        /// <param name="currentEventFamilies">The newer event (i.e., snapshot / sync) to compare to an older event.</param>
+        /// <returns></returns>
+        public static IEnumerable<FamilyInstance> GetDeletedFamilies(
+            List<FamilyInstance> olderEventFamilies,
+            List<FamilyInstance> currentEventFamilies) {
+            var deletedFamilies = olderEventFamilies.Where(f1 => currentEventFamilies.All(f2 => f2.Id != f1.Id));
+            return deletedFamilies;
+        }
     }
 }
