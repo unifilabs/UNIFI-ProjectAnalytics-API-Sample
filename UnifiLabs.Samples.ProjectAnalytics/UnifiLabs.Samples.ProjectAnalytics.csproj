@@ -95,7 +95,6 @@
     <Compile Include="Entities\Level.cs" />
     <Compile Include="Entities\Model.cs" />
     <Compile Include="Entities\Project.cs" />
-    <Compile Include="Secrets.cs" />
     <Compile Include="Unifi.ProjectAnalytics.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

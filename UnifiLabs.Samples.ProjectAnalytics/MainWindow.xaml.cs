@@ -1,9 +1,11 @@
-﻿using ProjectAnalytics;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Win32;
 using UnifiLabs.Samples.ProjectAnalytics.Entities;
 
 namespace UnifiLabs.Samples.ProjectAnalytics {
@@ -11,48 +13,58 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow {
-        // Get an access token using basic authentication (username and password)
-        // Optionally create a file named "Secrets.cs" and add fields called UnifiUsername and UnifiPassword and add your credentials for the below code to work.
-        private readonly string _unifiToken = Unifi.GetAccessToken(Secrets.UnifiUsername, Secrets.UnifiPassword);
+
+        // Instantiate a string to store the UNIFI token
+        private string _unifiToken = string.Empty;
+
         public List<FamilyInstance> FamilyInstances = new List<FamilyInstance>();
+
+        // Get the most recent commit from the selected model
+        public Commit LatestCommit;
+
+        // Instantiate the selected commit
+        public Event SelectedEvent;
 
         // Instantiate objects for user selection
         public List<Symbol> Symbols = new List<Symbol>();
 
         public MainWindow() {
             // Only launch application if an access token was granted
-            if (_unifiToken.Length > 0) {
-                InitializeComponent();
+            InitializeComponent();
 
-                // Hide overlay UI elements
-                InfoUiVisible(false);
+            // Hide overlay UI elements
+            InfoUiVisible(false);
 
-                // Hide the info button until a project is seleceted
+            if (string.IsNullOrEmpty(_unifiToken)) {
+                // Display login form
+                LoginUiVisible(true);
+
+                // Hide the info button until a project is selected
                 ButtonProjectInfo.Visibility = Visibility.Hidden;
 
                 // Hide models UI until a project that contains models is selected
                 ComboModels.Visibility = Visibility.Hidden;
                 LabelModels.Visibility = Visibility.Hidden;
-
-                // Get all projects to display in combobox
-                var projects = Unifi.GetProjects(_unifiToken);
-
-                // Sort the projects by name
-                projects = projects.OrderBy(o => o.Name).ToList();
-
-                // Add each project to the combobox as items
-                foreach (var project in projects) { ComboProjects.Items.Add(project); }
+                BtnCompareChanges.Visibility = Visibility.Hidden;
             }
-            else {
-                // Show a dialog box if an access token was not granted
-                MessageBox.Show(
-                    "Could not retrieve an access token. " +
-                    "Please verify that your username and password are correct in Secrets.cs",
-                    "Error"
-                );
+        }
 
-                // Close the application if an access token was not granted
-                Application.Current.Shutdown();
+        /// <summary>
+        ///     Display or hide the overlay UI elements which display the login form
+        /// </summary>
+        /// <param name="isVisible"></param>
+        public void LoginUiVisible(bool isVisible) {
+            if (isVisible)
+            {
+                // Show models UI
+                GridOverlay.Visibility = Visibility.Visible;
+                GridLogin.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                // Hide models UI
+                GridOverlay.Visibility = Visibility.Hidden;
+                GridLogin.Visibility = Visibility.Hidden;
             }
         }
 
@@ -70,6 +82,39 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                 // Hide models UI
                 GridOverlay.Visibility = Visibility.Hidden;
                 GridInfo.Visibility = Visibility.Hidden;
+            }
+        }
+
+        /// <summary>
+        ///     Logic for logging a user in and retrieving initial data.
+        /// </summary>
+        public void Login() {
+            // Retrieve a UNIFI token
+            _unifiToken = Unifi.GetAccessToken(TxtBoxUsername.Text, PassBoxPassword.Password);
+
+            if (!string.IsNullOrEmpty(_unifiToken))
+            {
+
+                // Get all projects to display in combobox
+                var projects = Unifi.GetProjects(_unifiToken);
+
+                // Sort the projects by name
+                projects = projects.OrderBy(o => o.Name).ToList();
+
+                // Add each project to the combobox as items
+                foreach (var project in projects) { ComboProjects.Items.Add(project); }
+
+                // Hide the login form
+                LoginUiVisible(false);
+            }
+            // Display a message if token is not valid
+            else
+            {
+                MessageBox.Show(
+                    "You were unable to login. " +
+                    "Please ensure that you have Project Analytics API access. " +
+                    "If you need access to the API, contact sales@unifilabs.com",
+                    "Login Failed");
             }
         }
 
@@ -169,6 +214,9 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                     // Sort the commits by date (newest first)
                     if (commits.Any()) { commits = commits.OrderByDescending(o => o.Timestamp).ToList(); }
 
+                    // Store the latest commit in field
+                    LatestCommit = commits[0];
+
                     // Add each commit to the listbox
                     foreach (var commit in commits) { ListboxCommits.Items.Add(commit); }
                 }
@@ -189,18 +237,26 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
 
             // Get secureUrl from event as object
             if (ListboxCommits.SelectedItem is Commit commit) {
+                // Show the report generation button
+                BtnCompareChanges.Visibility = Visibility.Visible;
+
                 var eventUrl = new Uri(Unifi.GetSecureUrl(_unifiToken, model, commit.EventId).ToString());
 
                 // Set event data from event URL
-                var eventData = Unifi.GetEventData(eventUrl);
+                SelectedEvent = Unifi.GetEventData(eventUrl);
 
                 // Set all commit symbols
-                foreach (var symbol in eventData.Data.ProjectFamilies.FamilySymbols) { Symbols.Add(symbol); }
+                foreach (var symbol in SelectedEvent.Data.ProjectFamilies.FamilySymbols) { Symbols.Add(symbol); }
 
-                // Add family instances as items on listbox
-                foreach (var instance in eventData.Data.ProjectFamilies.FamilyInstances) { FamilyInstances.Add(instance); }
+                // Add family instances as items in listbox
+                foreach (var instance in SelectedEvent.Data.ProjectFamilies.FamilyInstances) { FamilyInstances.Add(instance); }
 
                 ListboxSecondary.ItemsSource = FamilyInstances;
+            }
+            
+            if (ListboxCommits.SelectedItem == null) {
+                // Hide the report generation button
+                BtnCompareChanges.Visibility = Visibility.Hidden;
             }
         }
 
@@ -231,6 +287,114 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                     if (numberOfSymbols > 1 || numberOfSymbols == 0) { MessageBox.Show("WARNING: " + numberOfSymbols + " symbols found."); }
                 }
             }
+        }
+
+        private void BtnCompareChanges_Click(object sender, RoutedEventArgs e) {
+            // Get model from selected item
+            var model = ComboModels.SelectedItem as Model;
+
+            // Get secureUrl from event as object
+            var latestEventUrl = new Uri(Unifi.GetSecureUrl(_unifiToken, model, LatestCommit.EventId).ToString());
+
+            // Set event data from event URL
+            var latestEvent = Unifi.GetEventData(latestEventUrl);
+
+            // Get latest and selected event families as lists
+            var latestEventFamilies = latestEvent.Data.ProjectFamilies.FamilyInstances.ToList();
+            var selectedEventFamilies = SelectedEvent.Data.ProjectFamilies.FamilyInstances.ToList();
+
+            // Retrieves all of the families that have been added to the project model since the selected sync
+            var addedFamilies = Unifi.GetNewFamilies(selectedEventFamilies, latestEventFamilies);
+
+            // Retrieves all of the families that have been deleted from the project model since the selected sync
+            var deletedFamilies = Unifi.GetDeletedFamilies(selectedEventFamilies, latestEventFamilies);
+
+            // Calculate the elapsed time between syncs
+            var elapsedTime = latestEvent.CollectionTime.Subtract(SelectedEvent.CollectionTime);
+
+            // Store the results of the test in a string
+            var reportData = "# Revit Model Changelog\n";
+
+            // Add a summary of data regarding the report
+            reportData += "This report was generated using the UNIFI Project Analytics API. For access to the source code, visit " +
+                          "[https://github.com/unifilabs/UNIFI-ProjectAnalytics-API-Sample]." +
+                          "\n---\n" +
+                          "*Model:* " + (ComboModels.SelectedItem as Model)?.Filename + "\n" +
+                          "*Dates Compared:* " +
+                          SelectedEvent.CollectionTime.LocalDateTime + " => " + latestEvent.CollectionTime.LocalDateTime + "\n" +
+                          "*Time elapsed:* " + elapsedTime.Days + " days, " + elapsedTime.Hours + " hours, " + elapsedTime.Minutes +
+                          " minutes, " + elapsedTime.Seconds + " seconds";
+
+            reportData += "\n---\n";
+
+            // Add the added families to the report string
+            reportData += "## Families Added\n";
+
+            // Get number of added families
+            var numberOfAddedFamilies = addedFamilies.Count();
+
+            if (numberOfAddedFamilies != 0) {
+                // Create a counter the generate an ordered list
+                var counter = 1;
+
+                reportData = reportData + ($"{numberOfAddedFamilies:n0}" + " families have been added.\n\n");
+
+                // Add an ordered list item for each family in the list
+                foreach (var fam in addedFamilies) {
+                    // Write data to a line in the report
+                    reportData += counter + ". [" + fam.ElementId + "] " + fam.Name + "\n";
+
+                    // Increase the counter by one to continue the ordered list
+                    counter += 1;
+                }
+            }
+            else { reportData += "No families were added.\n"; }
+
+            reportData += "\n---\n";
+
+            // Add the deleted families to the report string
+            reportData += "## Families Deleted\n";
+
+            if (deletedFamilies.Count() != 0) {
+                // Create a counter the generate an ordered list
+                var counter = 1;
+
+                reportData += $"{deletedFamilies.Count():n0}" + " families have been deleted.\n\n";
+
+                // Add an ordered list item for each family in the list
+                foreach (var fam in deletedFamilies) {
+                    // Write data to a line in the report
+                    reportData += counter + ". [" + fam.ElementId + "] " + fam.Name + "\n";
+
+                    // Increase the counter by one to continue the ordered list
+                    counter += 1;
+                }
+            }
+            else { reportData += "No families were deleted.\n"; }
+
+            reportData += "\n---\n";
+
+            // Save the string as a text file
+            var save = new SaveFileDialog { FileName = "UNIFI Project Analytics Changelog", Filter = "Markdown Text File | *.md" };
+
+            if (save.ShowDialog() == true) {
+                var writer = new StreamWriter(save.OpenFile());
+
+                writer.Write(reportData);
+                writer.Dispose();
+                writer.Close();
+
+                MessageBox.Show("Report saved to: " + save.FileName);
+            }
+        }
+
+        private void BtnHelp_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/unifilabs/UNIFI-ProjectAnalytics-API-Sample");
+        }
+
+        private void BtnLogin_Click(object sender, RoutedEventArgs e) {
+            Login();
         }
     }
 }
