@@ -21,7 +21,7 @@ After launching the application, enter your UNIFI username and password. Once lo
 
 **1. Select a project from the Projects dropdown menu. If the selected project has models assigned, the Models dropdown menu appears and is populated with the models that are assigned to the selected project.**
 
-> This action makes an API call to the `/models` endpoint to retieve all models from the selected project.
+> This action makes an API call to the `/models` endpoint to retrieve all models from the selected project.
 
 **2. Select a model from the Models dropdown menu to populate the Model Snapshots column with the snapshots (i.e., syncs to central) of the selected model.**
 
