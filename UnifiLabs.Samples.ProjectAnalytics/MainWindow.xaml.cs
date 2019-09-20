@@ -34,12 +34,13 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                 // Hide overlay UI elements
                 InfoUiVisible(false);
 
-                // Hide the info button until a project is seleceted
+                // Hide the info button until a project is selected
                 ButtonProjectInfo.Visibility = Visibility.Hidden;
 
                 // Hide models UI until a project that contains models is selected
                 ComboModels.Visibility = Visibility.Hidden;
                 LabelModels.Visibility = Visibility.Hidden;
+                BtnCompareChanges.Visibility = Visibility.Hidden;
 
                 // Get all projects to display in combobox
                 var projects = Unifi.GetProjects(_unifiToken);
@@ -199,6 +200,9 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
 
             // Get secureUrl from event as object
             if (ListboxCommits.SelectedItem is Commit commit) {
+                // Show the report generation button
+                BtnCompareChanges.Visibility = Visibility.Visible;
+
                 var eventUrl = new Uri(Unifi.GetSecureUrl(_unifiToken, model, commit.EventId).ToString());
 
                 // Set event data from event URL
@@ -211,6 +215,11 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                 foreach (var instance in SelectedEvent.Data.ProjectFamilies.FamilyInstances) { FamilyInstances.Add(instance); }
 
                 ListboxSecondary.ItemsSource = FamilyInstances;
+            }
+            
+            if (ListboxCommits.SelectedItem == null) {
+                // Hide the report generation button
+                BtnCompareChanges.Visibility = Visibility.Hidden;
             }
         }
 
