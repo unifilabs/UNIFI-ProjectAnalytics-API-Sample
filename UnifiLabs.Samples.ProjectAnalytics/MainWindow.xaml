@@ -6,6 +6,7 @@
         mc:Ignorable="d"
         Title="UNIFI - Project Data Browser" Height="450" Width="1168">
     <Grid>
+        <Button x:Name="BtnCompareChanges" Content="Generate Changelog" Margin="0,22,440.6,0" VerticalAlignment="Top" Height="22" Click="BtnCompareChanges_Click" HorizontalAlignment="Right" Width="122" ToolTip="Generate a changelog which compares the changes between the selected snapshot and the latest snapshot."/>
         <ComboBox x:Name="ComboProjects" HorizontalAlignment="Left" Margin="12,22,0,0" VerticalAlignment="Top"
                   Width="202" DisplayMemberPath="Name" SelectionChanged="ComboProjects_SelectionChanged" Height="22" />
         <ListBox x:Name="ListboxCommits" Margin="10,75,0,10" HorizontalAlignment="Left" Width="202"
@@ -35,13 +36,22 @@
                    VerticalAlignment="Top" />
         <TextBlock HorizontalAlignment="Left" Margin="454,56,0,0" TextWrapping="Wrap" Text="Data"
                    VerticalAlignment="Top" />
-        <Grid x:Name="GridOverlay" Background="#CC000000" Margin="0,0,-0.4,0" d:IsHidden="True" />
+        <Grid x:Name="GridOverlay" Background="#CC000000" Margin="0,0,-0.4,0" />
         <Grid x:Name="GridInfo" Margin="267,64,265.6,58" Background="White" d:IsHidden="True">
             <Button x:Name="ButtonCloseOverlay" Content="X" VerticalAlignment="Top" Click="buttonCloseOverlay_Click"
                     BorderBrush="{x:Null}" Background="White" Margin="0,10,10,0" HorizontalAlignment="Right" Width="22" />
             <TextBox x:Name="TextBoxInfo" Margin="10,43,10,10" TextWrapping="Wrap" BorderBrush="{x:Null}"
                      IsReadOnly="True" Padding="20" />
         </Grid>
-        <Button x:Name="BtnCompareChanges" Content="Generate Changelog" Margin="0,22,440.6,0" VerticalAlignment="Top" Height="22" Click="BtnCompareChanges_Click" HorizontalAlignment="Right" Width="122" ToolTip="Generate a changelog which compares the changes between the selected snapshot and the latest snapshot."/>
+        <Grid x:Name="GridLogin" Margin="244,44,213.6,0" Height="343" VerticalAlignment="Top" Background="White">
+            <Button x:Name="BtnLogin" Content="Login" Margin="134,266,134,0" VerticalAlignment="Top" Height="36" Click="BtnLogin_Click"/>
+            <TextBox x:Name="TxtBoxUsername" Margin="133,150,133,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="29" Padding="0" ToolTip=""/>
+            <Label Content="Username" Margin="134,124,133,0" VerticalAlignment="Top"/>
+            <PasswordBox x:Name="PassBoxPassword" Margin="134,210,134,0" VerticalAlignment="Top" Height="29" Padding="0"/>
+            <Label Content="Password" Margin="134,184,134,0" VerticalAlignment="Top"/>
+            <TextBlock Margin="182,22,182,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" Width="340" TextAlignment="Center"><Run Text="Login to UNIFI Pr"/><Run Text="oject Analytics"/></TextBlock>
+            <Button x:Name="BtnHelp" Content="About" VerticalAlignment="Top" Height="17" FontSize="10" Background="{x:Null}" BorderBrush="{x:Null}" Margin="234,316,240,0" Foreground="#FF0043A5" Click="BtnHelp_Click"/>
+            <TextBlock Margin="134,56,133,0" TextWrapping="Wrap" VerticalAlignment="Top" Background="#FFE5EFFF" Foreground="#FF002B80" Padding="10" TextAlignment="Center"><Run Text="Note: You must have API access to use this application. "/><LineBreak/><Run Text="For more information: sales@unifilabs.com."/></TextBlock>
+        </Grid>
     </Grid>
 </Window>

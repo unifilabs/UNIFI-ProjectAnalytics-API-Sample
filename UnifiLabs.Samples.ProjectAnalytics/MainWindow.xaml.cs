@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
@@ -12,9 +13,10 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow {
-        // Get an access token using basic authentication (username and password)
-        // Optionally create a file named "Secrets.cs" and add fields called UnifiUsername and UnifiPassword and add your credentials for the below code to work.
-        private readonly string _unifiToken = Unifi.GetAccessToken(Secrets.UnifiUsername, Secrets.UnifiPassword);
+
+        // Instantiate a string to store the UNIFI token
+        private string _unifiToken = string.Empty;
+
         public List<FamilyInstance> FamilyInstances = new List<FamilyInstance>();
 
         // Get the most recent commit from the selected model
@@ -28,11 +30,14 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
 
         public MainWindow() {
             // Only launch application if an access token was granted
-            if (_unifiToken.Length > 0) {
-                InitializeComponent();
+            InitializeComponent();
 
-                // Hide overlay UI elements
-                InfoUiVisible(false);
+            // Hide overlay UI elements
+            InfoUiVisible(false);
+
+            if (string.IsNullOrEmpty(_unifiToken)) {
+                // Display login form
+                LoginUiVisible(true);
 
                 // Hide the info button until a project is selected
                 ButtonProjectInfo.Visibility = Visibility.Hidden;
@@ -41,26 +46,25 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                 ComboModels.Visibility = Visibility.Hidden;
                 LabelModels.Visibility = Visibility.Hidden;
                 BtnCompareChanges.Visibility = Visibility.Hidden;
-
-                // Get all projects to display in combobox
-                var projects = Unifi.GetProjects(_unifiToken);
-
-                // Sort the projects by name
-                projects = projects.OrderBy(o => o.Name).ToList();
-
-                // Add each project to the combobox as items
-                foreach (var project in projects) { ComboProjects.Items.Add(project); }
             }
-            else {
-                // Show a dialog box if an access token was not granted
-                MessageBox.Show(
-                    "Could not retrieve an access token. " +
-                    "Please verify that your username and password are correct in Secrets.cs",
-                    "Error"
-                );
+        }
 
-                // Close the application if an access token was not granted
-                Application.Current.Shutdown();
+        /// <summary>
+        ///     Display or hide the overlay UI elements which display the login form
+        /// </summary>
+        /// <param name="isVisible"></param>
+        public void LoginUiVisible(bool isVisible) {
+            if (isVisible)
+            {
+                // Show models UI
+                GridOverlay.Visibility = Visibility.Visible;
+                GridLogin.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                // Hide models UI
+                GridOverlay.Visibility = Visibility.Hidden;
+                GridLogin.Visibility = Visibility.Hidden;
             }
         }
 
@@ -78,6 +82,39 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                 // Hide models UI
                 GridOverlay.Visibility = Visibility.Hidden;
                 GridInfo.Visibility = Visibility.Hidden;
+            }
+        }
+
+        /// <summary>
+        ///     Logic for logging a user in and retrieving initial data.
+        /// </summary>
+        public void Login() {
+            // Retrieve a UNIFI token
+            _unifiToken = Unifi.GetAccessToken(TxtBoxUsername.Text, PassBoxPassword.Password);
+
+            if (!string.IsNullOrEmpty(_unifiToken))
+            {
+
+                // Get all projects to display in combobox
+                var projects = Unifi.GetProjects(_unifiToken);
+
+                // Sort the projects by name
+                projects = projects.OrderBy(o => o.Name).ToList();
+
+                // Add each project to the combobox as items
+                foreach (var project in projects) { ComboProjects.Items.Add(project); }
+
+                // Hide the login form
+                LoginUiVisible(false);
+            }
+            // Display a message if token is not valid
+            else
+            {
+                MessageBox.Show(
+                    "You were unable to login. " +
+                    "Please ensure that you have Project Analytics API access. " +
+                    "If you need access to the API, contact sales@unifilabs.com",
+                    "Login Failed");
             }
         }
 
@@ -349,6 +386,15 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
 
                 MessageBox.Show("Report saved to: " + save.FileName);
             }
+        }
+
+        private void BtnHelp_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/unifilabs/UNIFI-ProjectAnalytics-API-Sample");
+        }
+
+        private void BtnLogin_Click(object sender, RoutedEventArgs e) {
+            Login();
         }
     }
 }
