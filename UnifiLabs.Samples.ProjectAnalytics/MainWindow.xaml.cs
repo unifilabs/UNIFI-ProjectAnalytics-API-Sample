@@ -1,10 +1,10 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Win32;
 using UnifiLabs.Samples.ProjectAnalytics.Entities;
 
 namespace UnifiLabs.Samples.ProjectAnalytics {
@@ -17,14 +17,14 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
         private readonly string _unifiToken = Unifi.GetAccessToken(Secrets.UnifiUsername, Secrets.UnifiPassword);
         public List<FamilyInstance> FamilyInstances = new List<FamilyInstance>();
 
-        // Instantiate objects for user selection
-        public List<Symbol> Symbols = new List<Symbol>();
+        // Get the most recent commit from the selected model
+        public Commit LatestCommit;
 
         // Instantiate the selected commit
         public Event SelectedEvent;
 
-        // Get the most recent commit from the selected model
-        public Commit LatestCommit;
+        // Instantiate objects for user selection
+        public List<Symbol> Symbols = new List<Symbol>();
 
         public MainWindow() {
             // Only launch application if an access token was granted
@@ -273,7 +273,7 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
             reportData += "This report was generated using the UNIFI Project Analytics API. For access to the source code, visit " +
                           "[https://github.com/unifilabs/UNIFI-ProjectAnalytics-API-Sample]." +
                           "\n---\n" +
-                          "*Model:* " + (ComboModels.SelectedItem as Model).Filename + "\n" +
+                          "*Model:* " + (ComboModels.SelectedItem as Model)?.Filename + "\n" +
                           "*Dates Compared:* " +
                           SelectedEvent.CollectionTime.LocalDateTime + " => " + latestEvent.CollectionTime.LocalDateTime + "\n" +
                           "*Time elapsed:* " + elapsedTime.Days + " days, " + elapsedTime.Hours + " hours, " + elapsedTime.Minutes +
@@ -284,11 +284,14 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
             // Add the added families to the report string
             reportData += "## Families Added\n";
 
-            if (addedFamilies.Count() != 0) {
+            // Get number of added families
+            var numberOfAddedFamilies = addedFamilies.Count();
+
+            if (numberOfAddedFamilies != 0) {
                 // Create a counter the generate an ordered list
                 var counter = 1;
 
-                reportData += String.Format("{0:n0}", addedFamilies.Count()) + " families have been added.\n\n";
+                reportData = reportData + ($"{numberOfAddedFamilies:n0}" + " families have been added.\n\n");
 
                 // Add an ordered list item for each family in the list
                 foreach (var fam in addedFamilies) {
@@ -310,7 +313,7 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
                 // Create a counter the generate an ordered list
                 var counter = 1;
 
-                reportData += String.Format("{0:n0}", deletedFamilies.Count()) + " families have been deleted.\n\n";
+                reportData += $"{deletedFamilies.Count():n0}" + " families have been deleted.\n\n";
 
                 // Add an ordered list item for each family in the list
                 foreach (var fam in deletedFamilies) {
@@ -326,13 +329,10 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
             reportData += "\n---\n";
 
             // Save the string as a text file
-            SaveFileDialog save = new SaveFileDialog();
-
-            save.FileName = "UNIFI Project Analytics Changelog";
-            save.Filter = "Markdown Text File | *.md";
+            var save = new SaveFileDialog { FileName = "UNIFI Project Analytics Changelog", Filter = "Markdown Text File | *.md" };
 
             if (save.ShowDialog() == true) {
-                StreamWriter writer = new StreamWriter(save.OpenFile());
+                var writer = new StreamWriter(save.OpenFile());
 
                 writer.Write(reportData);
                 writer.Dispose();
