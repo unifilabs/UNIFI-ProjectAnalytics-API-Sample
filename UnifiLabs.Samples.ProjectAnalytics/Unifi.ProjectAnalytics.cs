@@ -26,11 +26,11 @@ namespace UnifiLabs.Samples.ProjectAnalytics {
             var response = client.Execute(request);
 
             if (response.IsSuccessful) {
-                // Deserialize JSON response to a dynamic object to retrieve the access token
-                var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                var unifiTokens = JsonConvert.DeserializeObject<List<UnifiToken>>(response.Content);
+                var projectAnalyticsToken = unifiTokens.FirstOrDefault(x => x.AccessType == "project-analytics");
 
-                // Set the token from the deserialized dynamic object
-                token = obj.access_token;
+                // Set the token from the deserialized object
+                token = projectAnalyticsToken?.APIKey;
             }
             else {
                 MessageBox.Show(
